@@ -21,7 +21,7 @@ import { AppService } from './app.service';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true, // 注意：在生產環境中應設置為 false
+        synchronize: configService.get('DB_SYNCHRONIZE'),
       }),
       inject: [ConfigService],
     }),
