@@ -2,7 +2,7 @@ import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './register.dto';
+import { Register } from './register.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -10,7 +10,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiBody({ type: RegisterDto })
+  @ApiBody({ type: Register })
   @ApiResponse({
     status: 201,
     description: 'User successfully registered',
@@ -35,7 +35,7 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@Body() registerDto: Register) {
     return this.authService.register(registerDto);
   }
 
