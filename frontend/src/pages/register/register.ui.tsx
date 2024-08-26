@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import {
   Box,
   Button,
@@ -31,7 +32,7 @@ const RegisterPage = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({
@@ -102,7 +103,7 @@ const RegisterPage = () => {
               <FormLabel>用戶名稱</FormLabel>
               <Input
                 type="text"
-                placeholder="your_username"
+                placeholder="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -111,7 +112,7 @@ const RegisterPage = () => {
               <FormLabel>電子郵件</FormLabel>
               <Input
                 type="email"
-                placeholder="your-email@example.com"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

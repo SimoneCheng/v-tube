@@ -10,6 +10,8 @@ type RegisterResponse = {
   id: number;
   username: string;
   email: string;
+  password: string;
+  createdAt: string;
 }
 
 export const postRegister = async (credentials: RegisterCredentials) => {

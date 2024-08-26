@@ -86,7 +86,7 @@ const LoginPage = () => {
               <FormLabel>電子郵件</FormLabel>
               <Input
                 type="email"
-                placeholder="your-email@example.com"
+                placeholder="email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
