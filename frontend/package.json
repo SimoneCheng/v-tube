@@ -4,8 +4,10 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "generate-routes": "tsr generate",
+    "watch-routes": "tsr watch",
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsr generate && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "bump": "changelogen --bump",
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@tanstack/router-cli": "^1.49.3",
     "@tanstack/router-devtools": "^1.48.1",
     "@tanstack/router-plugin": "^1.47.0",
     "@types/node": "^22.5.0",

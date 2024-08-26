@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link as TanstackLink } from '@tanstack/react-router';
 import {
   Box,
   Button,
@@ -9,39 +8,57 @@ import {
   FormLabel,
   Heading,
   Input,
-  Link,
   VStack,
+  Link,
   useColorModeValue,
-  useToast
+  useToast,
 } from '@chakra-ui/react';
+import {
+  useNavigate,
+  Link as TanstackLink
+} from '@tanstack/react-router';
 import Logo from '../../components/logo';
-import { postLogin } from './login.api';
+import { postRegister } from './register.api';
 
-const LoginPage = () => {
+const RegisterPage = () => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const toast = useToast();
+
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const toast = useToast();
-
-  const handleLogin = async (e: FormEvent) => {
+  const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast({
+        title: "密碼不匹配",
+        description: "請確保兩次輸入的密碼相同",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
     setIsLoading(true);
     try {
-      const response = await postLogin({ email, password });
-      localStorage.setItem('token', response.accessToken);
+      await postRegister({ username, email, password });
       toast({
-        title: "登入成功",
+        title: "註冊成功",
+        description: "請使用您的新帳號登入",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-    } catch {
+      navigate({ to: '/login' });
+    } catch (error) {
       toast({
-        title: "登入失敗",
-        description: "請檢查您的 email 和密碼",
+        title: "註冊失敗",
+        description: error instanceof Error ? error.message : "發生未知錯誤",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -74,15 +91,24 @@ const LoginPage = () => {
         position="relative"
         zIndex={1}
       >
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleRegister}>
           <VStack spacing={4} align="flex-start" w="full">
             <Flex justifyContent="center" w="full">
               <Logo width="150px" height="75px" />
             </Flex>
             <Heading as="h2" size="xl" textAlign="center" w="full">
-              登入您的帳號
+              註冊
             </Heading>
-            <FormControl>
+            <FormControl isRequired>
+              <FormLabel>用戶名稱</FormLabel>
+              <Input
+                type="text"
+                placeholder="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </FormControl>
+            <FormControl isRequired>
               <FormLabel>電子郵件</FormLabel>
               <Input
                 type="email"
@@ -91,7 +117,7 @@ const LoginPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
-            <FormControl>
+            <FormControl isRequired>
               <FormLabel>密碼</FormLabel>
               <Input
                 type="password"
@@ -100,19 +126,27 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
+            <FormControl isRequired>
+              <FormLabel>確認密碼</FormLabel>
+              <Input
+                type="password"
+                placeholder="********"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </FormControl>
             <Button
               colorScheme="purple"
               width="full"
               type="submit"
               isLoading={isLoading}
             >
-              登入
+              註冊
             </Button>
-            <Flex justifyContent="space-between" width="full">
-              <Link color="purple.500">忘記密碼？</Link>
-              <TanstackLink to="/register">
+            <Flex justifyContent="center" width="full">
+              <TanstackLink to="/login">
                 <Link color="purple.500">
-                  註冊新帳號
+                  已有帳號？點此登入
                 </Link>
               </TanstackLink>
             </Flex>
@@ -123,4 +157,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
