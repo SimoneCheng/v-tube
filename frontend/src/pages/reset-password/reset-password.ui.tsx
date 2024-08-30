@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
+import { Link as TanstackLink, useSearch } from '@tanstack/react-router';
 import {
   Box,
   Button,
@@ -8,31 +8,23 @@ import {
   FormLabel,
   Heading,
   Input,
-  VStack,
   Link,
+  VStack,
   useColorModeValue,
-  useToast,
+  useToast
 } from '@chakra-ui/react';
-import {
-  useNavigate,
-  Link as TanstackLink
-} from '@tanstack/react-router';
 import Logo from '../../components/logo';
-import { postRegister } from './register.api';
 
-const RegisterPage = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
+const ResetPasswordPage = () => {
+  const bgColor = useColorModeValue('gray.50', 'gray.800');
+  const cardBgColor = useColorModeValue('white', 'gray.700');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const toast = useToast();
+  // const { token } = useSearch(); // 從URL獲取重置token
 
-  const bgColor = useColorModeValue('gray.50', 'gray.800');
-  const cardBgColor = useColorModeValue('white', 'gray.700');
-
-  const handleRegister = async (e: FormEvent) => {
+  const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       toast({
@@ -46,19 +38,19 @@ const RegisterPage = () => {
     }
     setIsLoading(true);
     try {
-      await postRegister({ username, email, password });
+      // await postResetPassword({ token, newPassword: password });
       toast({
-        title: "註冊成功",
-        description: "請使用您的新帳號登入",
+        title: "密碼重置成功",
+        description: "請使用新密碼登入",
         status: "success",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
-      navigate({ to: '/login' });
-    } catch (error) {
+      // 可以在這裡添加重定向到登入頁面的邏輯
+    } catch {
       toast({
-        title: "註冊失敗",
-        description: error instanceof Error ? error.message : "發生未知錯誤",
+        title: "重置失敗",
+        description: "請重新申請密碼重置",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -91,49 +83,29 @@ const RegisterPage = () => {
         position="relative"
         zIndex={1}
       >
-        <form onSubmit={handleRegister}>
+        <form onSubmit={handleResetPassword}>
           <VStack spacing={4} align="flex-start" w="full">
             <Flex justifyContent="center" w="full">
               <Logo width="150px" height="75px" />
             </Flex>
             <Heading as="h2" size="xl" textAlign="center" w="full">
-              註冊
+              重設密碼
             </Heading>
-            <FormControl isRequired>
-              <FormLabel>用戶名稱</FormLabel>
-              <Input
-                type="text"
-                placeholder="username"
-                focusBorderColor="purple.500"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>電子郵件</FormLabel>
-              <Input
-                type="email"
-                placeholder="email@example.com"
-                focusBorderColor="purple.500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel>密碼</FormLabel>
+            <FormControl>
+              <FormLabel>新密碼</FormLabel>
               <Input
                 type="password"
-                placeholder="********"
+                placeholder="輸入新密碼"
                 focusBorderColor="purple.500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
-            <FormControl isRequired>
-              <FormLabel>確認密碼</FormLabel>
+            <FormControl>
+              <FormLabel>確認新密碼</FormLabel>
               <Input
                 type="password"
-                placeholder="********"
+                placeholder="再次輸入新密碼"
                 focusBorderColor="purple.500"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -145,12 +117,12 @@ const RegisterPage = () => {
               type="submit"
               isLoading={isLoading}
             >
-              註冊
+              重設密碼
             </Button>
             <Flex justifyContent="center" width="full">
               <TanstackLink to="/login">
                 <Link color="purple.500">
-                  已有帳號？點此登入
+                  返回登入
                 </Link>
               </TanstackLink>
             </Flex>
@@ -161,4 +133,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default ResetPasswordPage;
