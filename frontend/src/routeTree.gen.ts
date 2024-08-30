@@ -11,12 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as ForgetPasswordImport } from './routes/forget-password'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const ResetPasswordRoute = ResetPasswordImport.update({
+  path: '/reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const RegisterRoute = RegisterImport.update({
   path: '/register',
@@ -25,6 +32,11 @@ const RegisterRoute = RegisterImport.update({
 
 const LoginRoute = LoginImport.update({
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ForgetPasswordRoute = ForgetPasswordImport.update({
+  path: '/forget-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -56,6 +68,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/forget-password': {
+      id: '/forget-password'
+      path: '/forget-password'
+      fullPath: '/forget-password'
+      preLoaderRoute: typeof ForgetPasswordImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -70,6 +89,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -78,8 +104,10 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   AboutRoute,
+  ForgetPasswordRoute,
   LoginRoute,
   RegisterRoute,
+  ResetPasswordRoute,
 })
 
 /* prettier-ignore-end */
@@ -92,8 +120,10 @@ export const routeTree = rootRoute.addChildren({
       "children": [
         "/",
         "/about",
+        "/forget-password",
         "/login",
-        "/register"
+        "/register",
+        "/reset-password"
       ]
     },
     "/": {
@@ -102,11 +132,17 @@ export const routeTree = rootRoute.addChildren({
     "/about": {
       "filePath": "about.tsx"
     },
+    "/forget-password": {
+      "filePath": "forget-password.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/reset-password": {
+      "filePath": "reset-password.tsx"
     }
   }
 }

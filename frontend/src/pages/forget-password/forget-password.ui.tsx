@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { Link as TanstackLink } from '@tanstack/react-router';
 import {
   Box,
@@ -15,33 +14,30 @@ import {
   useToast
 } from '@chakra-ui/react';
 import Logo from '../../components/logo';
-import { postLogin } from './login.api';
 
-const LoginPage = () => {
+const ForgetPasswordPage = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
-
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const handleLogin = async (e: FormEvent) => {
+  const handleForgotPassword = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await postLogin({ email, password });
-      localStorage.setItem('token', response.accessToken);
+      // await postForgotPassword({ email });
       toast({
-        title: "登入成功",
+        title: "重置密碼郵件已發送",
+        description: "請檢查您的郵箱",
         status: "success",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     } catch {
       toast({
-        title: "登入失敗",
-        description: "請檢查您的 email 和密碼",
+        title: "發送失敗",
+        description: "請確認您輸入的郵箱地址正確",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -74,13 +70,13 @@ const LoginPage = () => {
         position="relative"
         zIndex={1}
       >
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleForgotPassword}>
           <VStack spacing={4} align="flex-start" w="full">
             <Flex justifyContent="center" w="full">
               <Logo width="150px" height="75px" />
             </Flex>
             <Heading as="h2" size="xl" textAlign="center" w="full">
-              登入您的帳號
+              忘記密碼
             </Heading>
             <FormControl>
               <FormLabel>電子郵件</FormLabel>
@@ -92,33 +88,18 @@ const LoginPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>密碼</FormLabel>
-              <Input
-                type="password"
-                placeholder="********"
-                focusBorderColor="purple.500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </FormControl>
             <Button
               colorScheme="purple"
               width="full"
               type="submit"
               isLoading={isLoading}
             >
-              登入
+              發送重置密碼郵件
             </Button>
-            <Flex justifyContent="space-between" width="full">
-              <TanstackLink to="/forget-password">
+            <Flex justifyContent="center" width="full">
+              <TanstackLink to="/login">
                 <Link color="purple.500">
-                  忘記密碼？
-                </Link>
-              </TanstackLink>
-              <TanstackLink to="/register">
-                <Link color="purple.500">
-                  註冊新帳號
+                  返回登入
                 </Link>
               </TanstackLink>
             </Flex>
@@ -129,4 +110,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgetPasswordPage;
