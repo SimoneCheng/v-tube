@@ -30,14 +30,14 @@ export class User {
 
   @ApiProperty({
     example: '2023-09-02T12:00:00Z',
-    description: 'The date when the user was created'
+    description: 'The date when the user was created',
   })
   @CreateDateColumn()
   createdAt: Date;
 
   @ApiProperty({
     example: '2023-09-02T12:00:00Z',
-    description: 'The date when the user was last updated'
+    description: 'The date when the user was last updated',
   })
   @UpdateDateColumn()
   updatedAt: Date;
