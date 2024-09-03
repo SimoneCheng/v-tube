@@ -3,8 +3,9 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class User {
@@ -23,9 +24,29 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @ApiHideProperty()
   @Column()
   password: string;
 
+  @ApiProperty({
+    example: '2023-09-02T12:00:00Z',
+    description: 'The date when the user was created',
+  })
   @CreateDateColumn()
   createdAt: Date;
+
+  @ApiProperty({
+    example: '2023-09-02T12:00:00Z',
+    description: 'The date when the user was last updated',
+  })
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @ApiHideProperty()
+  @Column({ nullable: true })
+  resetPasswordToken: string;
+
+  @ApiHideProperty()
+  @Column({ nullable: true })
+  resetPasswordExpires: Date;
 }
