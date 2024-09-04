@@ -1,8 +1,7 @@
 import { useState, FormEvent } from 'react';
 import {
   Link as TanstackLink,
-  useSearch,
-  useNavigate
+  getRouteApi
 } from '@tanstack/react-router';
 import {
   Box,
@@ -20,6 +19,8 @@ import {
 import Logo from '../../components/logo';
 import { postResetPassword } from './reset-password.api';
 
+const route = getRouteApi('/reset-password/$token');
+
 const ResetPasswordPage = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
@@ -29,8 +30,8 @@ const ResetPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
-  const navigate = useNavigate();
-  const { token } = useSearch({ from: '/reset-password' });
+  const navigate = route.useNavigate();
+  const { token } = route.useParams();
 
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();

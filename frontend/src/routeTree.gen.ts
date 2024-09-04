@@ -11,19 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as ForgetPasswordImport } from './routes/forget-password'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as ResetPasswordTokenImport } from './routes/reset-password.$token'
 
 // Create/Update Routes
-
-const ResetPasswordRoute = ResetPasswordImport.update({
-  path: '/reset-password',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const RegisterRoute = RegisterImport.update({
   path: '/register',
@@ -47,6 +42,11 @@ const AboutRoute = AboutImport.update({
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ResetPasswordTokenRoute = ResetPasswordTokenImport.update({
+  path: '/reset-password/$token',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -89,11 +89,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordImport
+    '/reset-password/$token': {
+      id: '/reset-password/$token'
+      path: '/reset-password/$token'
+      fullPath: '/reset-password/$token'
+      preLoaderRoute: typeof ResetPasswordTokenImport
       parentRoute: typeof rootRoute
     }
   }
@@ -107,7 +107,7 @@ export const routeTree = rootRoute.addChildren({
   ForgetPasswordRoute,
   LoginRoute,
   RegisterRoute,
-  ResetPasswordRoute,
+  ResetPasswordTokenRoute,
 })
 
 /* prettier-ignore-end */
@@ -123,7 +123,7 @@ export const routeTree = rootRoute.addChildren({
         "/forget-password",
         "/login",
         "/register",
-        "/reset-password"
+        "/reset-password/$token"
       ]
     },
     "/": {
@@ -141,8 +141,8 @@ export const routeTree = rootRoute.addChildren({
     "/register": {
       "filePath": "register.tsx"
     },
-    "/reset-password": {
-      "filePath": "reset-password.tsx"
+    "/reset-password/$token": {
+      "filePath": "reset-password.$token.tsx"
     }
   }
 }
