@@ -1,5 +1,8 @@
 import { useState, FormEvent } from 'react';
-import { Link as TanstackLink, useSearch } from '@tanstack/react-router';
+import {
+  Link as TanstackLink,
+  getRouteApi
+} from '@tanstack/react-router';
 import {
   Box,
   Button,
@@ -14,15 +17,21 @@ import {
   useToast
 } from '@chakra-ui/react';
 import Logo from '../../components/logo';
+import { postResetPassword } from './reset-password.api';
+
+const route = getRouteApi('/reset-password/$token');
 
 const ResetPasswordPage = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
+
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
   const toast = useToast();
-  // const { token } = useSearch(); // 從URL獲取重置token
+  const navigate = route.useNavigate();
+  const { token } = route.useParams();
 
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
@@ -38,7 +47,7 @@ const ResetPasswordPage = () => {
     }
     setIsLoading(true);
     try {
-      // await postResetPassword({ token, newPassword: password });
+      await postResetPassword({ token, newPassword: password });
       toast({
         title: "密碼重置成功",
         description: "請使用新密碼登入",
@@ -46,7 +55,7 @@ const ResetPasswordPage = () => {
         duration: 5000,
         isClosable: true,
       });
-      // 可以在這裡添加重定向到登入頁面的邏輯
+      navigate({ to: '/login' });
     } catch {
       toast({
         title: "重置失敗",
