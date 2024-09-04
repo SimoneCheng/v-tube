@@ -56,7 +56,7 @@ export class UsersService {
     user.resetPasswordExpires = new Date(Date.now() + 600000); // 10 minutes
     await this.usersRepository.save(user);
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
-    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
     await this.emailService.sendPasswordResetEmail(user.email, resetUrl);
     return { message: 'Reset password email sent' };
   }
