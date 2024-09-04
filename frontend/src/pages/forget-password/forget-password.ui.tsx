@@ -14,6 +14,7 @@ import {
   useToast
 } from '@chakra-ui/react';
 import Logo from '../../components/logo';
+import { postForgotPassword } from './forgot-password.api';
 
 const ForgetPasswordPage = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.800');
@@ -26,7 +27,7 @@ const ForgetPasswordPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // await postForgotPassword({ email });
+      await postForgotPassword({ email });
       toast({
         title: "重置密碼郵件已發送",
         description: "請檢查您的郵箱",
