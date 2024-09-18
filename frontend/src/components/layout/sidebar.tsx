@@ -31,7 +31,7 @@ const Sidebar = (props: SidebarProps) => {
       bg="white"
       borderRight="1px"
       borderRightColor="gray.200"
-      w={isCollapsed ? "60px" : "200px"}
+      w={isCollapsed ? "75px" : "200px"}
       transition="width 0.3s"
     >
       <Flex direction="column" h="full" px={4} py={4}>

@@ -6,7 +6,8 @@ import {
   Text,
   Avatar,
   HStack,
-  IconButton
+  IconButton,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FiSearch } from 'react-icons/fi';
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -19,16 +20,18 @@ type TopBarProps = {
 
 const TopBar = (props: TopBarProps) => {
   const { isCollapsed, onToggle } = props;
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Flex
       as="header"
+      bg={bgColor}
+      color={useColorModeValue('gray.800', 'white')}
       align="center"
       justify="space-between"
       wrap="wrap"
       padding="0.5rem"
-      bg="white"
-      color="gray.800"
       position="fixed"
       top={0}
       left={0}
@@ -36,7 +39,8 @@ const TopBar = (props: TopBarProps) => {
       height="66px"
       zIndex="sticky"
       borderBottom="1px"
-      borderBottomColor="gray.200"
+      borderBottomColor={borderColor}
+      boxShadow="sm"
     >
       <Flex align="center" mr={5}>
         <IconButton
@@ -54,7 +58,7 @@ const TopBar = (props: TopBarProps) => {
         <InputLeftElement pointerEvents="none">
           <FiSearch color="gray.300" />
         </InputLeftElement>
-        <Input type="text" placeholder="搜尋影片..." />
+        <Input type="text" placeholder="搜尋影片..." borderRadius="full" />
       </InputGroup>
       <HStack spacing={4}>
         <Text>John Doe</Text>
