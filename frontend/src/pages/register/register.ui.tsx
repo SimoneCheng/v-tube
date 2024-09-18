@@ -148,11 +148,13 @@ const RegisterPage = () => {
               註冊
             </Button>
             <Flex justifyContent="center" width="full">
-              <TanstackLink to="/login">
-                <Link color="purple.500">
-                  已有帳號？點此登入
-                </Link>
-              </TanstackLink>
+              <Link
+                as={TanstackLink}
+                to="/login"
+                color="purple.500"
+              >
+                已有帳號？點此登入
+              </Link>
             </Flex>
           </VStack>
         </form>

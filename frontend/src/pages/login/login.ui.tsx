@@ -111,16 +111,20 @@ const LoginPage = () => {
               登入
             </Button>
             <Flex justifyContent="space-between" width="full">
-              <TanstackLink to="/forget-password">
-                <Link color="purple.500">
-                  忘記密碼？
-                </Link>
-              </TanstackLink>
-              <TanstackLink to="/register">
-                <Link color="purple.500">
-                  註冊新帳號
-                </Link>
-              </TanstackLink>
+              <Link
+                as={TanstackLink}
+                to="/forget-password"
+                color="purple.500"
+              >
+                忘記密碼？
+              </Link>
+              <Link
+                as={TanstackLink}
+                to="/register"
+                color="purple.500"
+              >
+                註冊新帳號
+              </Link>
             </Flex>
           </VStack>
         </form>

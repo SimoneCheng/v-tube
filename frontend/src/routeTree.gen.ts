@@ -14,9 +14,10 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as ForgetPasswordImport } from './routes/forget-password'
-import { Route as AboutImport } from './routes/about'
+import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as ResetPasswordTokenImport } from './routes/reset-password.$token'
+import { Route as LayoutMeImport } from './routes/_layout.me'
 
 // Create/Update Routes
 
@@ -35,8 +36,8 @@ const ForgetPasswordRoute = ForgetPasswordImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const AboutRoute = AboutImport.update({
-  path: '/about',
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -50,6 +51,11 @@ const ResetPasswordTokenRoute = ResetPasswordTokenImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const LayoutMeRoute = LayoutMeImport.update({
+  path: '/me',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -61,11 +67,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
     '/forget-password': {
@@ -89,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
+    '/_layout/me': {
+      id: '/_layout/me'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof LayoutMeImport
+      parentRoute: typeof LayoutImport
+    }
     '/reset-password/$token': {
       id: '/reset-password/$token'
       path: '/reset-password/$token'
@@ -103,7 +116,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
-  AboutRoute,
+  LayoutRoute: LayoutRoute.addChildren({ LayoutMeRoute }),
   ForgetPasswordRoute,
   LoginRoute,
   RegisterRoute,
@@ -119,7 +132,7 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
+        "/_layout",
         "/forget-password",
         "/login",
         "/register",
@@ -129,8 +142,11 @@ export const routeTree = rootRoute.addChildren({
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
+    "/_layout": {
+      "filePath": "_layout.tsx",
+      "children": [
+        "/_layout/me"
+      ]
     },
     "/forget-password": {
       "filePath": "forget-password.tsx"
@@ -140,6 +156,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/_layout/me": {
+      "filePath": "_layout.me.tsx",
+      "parent": "/_layout"
     },
     "/reset-password/$token": {
       "filePath": "reset-password.$token.tsx"
