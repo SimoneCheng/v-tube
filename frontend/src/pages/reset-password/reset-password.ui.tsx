@@ -129,11 +129,13 @@ const ResetPasswordPage = () => {
               重設密碼
             </Button>
             <Flex justifyContent="center" width="full">
-              <TanstackLink to="/login">
-                <Link color="purple.500">
-                  返回登入
-                </Link>
-              </TanstackLink>
+              <Link
+                as={TanstackLink}
+                to="/login"
+                color="purple.500"
+              >
+                返回登入
+              </Link>
             </Flex>
           </VStack>
         </form>
