@@ -15,7 +15,7 @@ import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as ForgetPasswordImport } from './routes/forget-password'
 import { Route as LayoutImport } from './routes/_layout'
-import { Route as IndexImport } from './routes/index'
+import { Route as LayoutIndexImport } from './routes/_layout.index'
 import { Route as ResetPasswordTokenImport } from './routes/reset-password.$token'
 import { Route as LayoutMeImport } from './routes/_layout.me'
 
@@ -41,9 +41,9 @@ const LayoutRoute = LayoutImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const LayoutIndexRoute = LayoutIndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 const ResetPasswordTokenRoute = ResetPasswordTokenImport.update({
@@ -60,13 +60,6 @@ const LayoutMeRoute = LayoutMeImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_layout': {
       id: '/_layout'
       path: ''
@@ -109,14 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordTokenImport
       parentRoute: typeof rootRoute
     }
+    '/_layout/': {
+      id: '/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof LayoutIndexImport
+      parentRoute: typeof LayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  IndexRoute,
-  LayoutRoute: LayoutRoute.addChildren({ LayoutMeRoute }),
+  LayoutRoute: LayoutRoute.addChildren({ LayoutMeRoute, LayoutIndexRoute }),
   ForgetPasswordRoute,
   LoginRoute,
   RegisterRoute,
@@ -131,7 +130,6 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/_layout",
         "/forget-password",
         "/login",
@@ -139,13 +137,11 @@ export const routeTree = rootRoute.addChildren({
         "/reset-password/$token"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
-    },
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
-        "/_layout/me"
+        "/_layout/me",
+        "/_layout/"
       ]
     },
     "/forget-password": {
@@ -163,6 +159,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/reset-password/$token": {
       "filePath": "reset-password.$token.tsx"
+    },
+    "/_layout/": {
+      "filePath": "_layout.index.tsx",
+      "parent": "/_layout"
     }
   }
 }
