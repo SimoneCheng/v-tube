@@ -1,14 +1,18 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { TokenBlacklistService } from './token-blacklist.service';
 import * as bcrypt from 'bcrypt';
 import { Register } from './register.entity';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -39,5 +43,23 @@ export class AuthService {
     });
     const { ...result } = newUser;
     return result;
+  }
+
+  async logout(token: string) {
+    try {
+      const decodedToken = this.jwtService.decode(token) as { exp: number };
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+      const expirationTime = decodedToken.exp - currentTimestamp;
+
+      if (expirationTime > 0) {
+        await this.tokenBlacklistService.addToBlacklist(token, expirationTime);
+        this.logger.log(`Token blacklisted successfully: ${token}`);
+      } else {
+        this.logger.warn(`Token already expired, not blacklisting: ${token}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error during logout: ${error.message}`, error.stack);
+      throw error;
+    }
   }
 }
