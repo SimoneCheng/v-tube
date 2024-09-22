@@ -1,6 +1,22 @@
-import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  Headers,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBearerAuth,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { Register } from './register.entity';
 
@@ -64,9 +80,27 @@ export class AuthController {
     },
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged out' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  async logout(@Headers('authorization') authHeader: string) {
+    if (!authHeader) {
+      throw new UnauthorizedException('No token provided');
+    }
+    const token = authHeader.split(' ')[1]; // Extract token from "Bearer <token>"
+    if (!token) {
+      throw new UnauthorizedException('Invalid token format');
+    }
+    await this.authService.logout(token);
+    return { message: 'Logged out successfully' };
   }
 }
