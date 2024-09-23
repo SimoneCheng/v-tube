@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link as TanstackLink } from '@tanstack/react-router';
+import { Link as TanstackLink, useNavigate } from '@tanstack/react-router';
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import Logo from '../../components/logo';
 import { postLogin } from './login.api';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const bgColor = useColorModeValue('gray.50', 'gray.800');
   const cardBgColor = useColorModeValue('white', 'gray.700');
 
@@ -38,6 +39,7 @@ const LoginPage = () => {
         duration: 3000,
         isClosable: true,
       });
+      navigate({ to: '/' });
     } catch {
       toast({
         title: "登入失敗",
