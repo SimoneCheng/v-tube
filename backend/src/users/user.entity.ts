@@ -52,10 +52,7 @@ export class User {
   @Column({ nullable: true })
   resetPasswordExpires: Date;
 
-  @ApiProperty({
-    type: () => [Video],
-    description: 'Videos uploaded by the user',
-  })
+  @ApiHideProperty()
   @OneToMany(() => Video, (video) => video.uploaderId)
   videos: Video[];
 }
