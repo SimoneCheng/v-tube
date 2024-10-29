@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   Request,
@@ -18,12 +19,17 @@ import {
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/user.entity';
 import { Register } from './register.entity';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private usersService: UsersService,
+  ) {}
 
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: Register })
@@ -102,5 +108,23 @@ export class AuthController {
     }
     await this.authService.logout(token);
     return { message: 'Logged out successfully' };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the current user profile.',
+    type: User,
+  })
+  async getProfile(@Request() req) {
+    const userId = req.user.userId;
+    const result = await this.usersService.findOne(userId);
+    delete result.password;
+    delete result.resetPasswordToken;
+    delete result.resetPasswordExpires;
+    return result;
   }
 }

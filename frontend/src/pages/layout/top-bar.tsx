@@ -12,13 +12,16 @@ import {
   Menu,
   MenuButton,
   MenuList,
-  MenuItem
+  MenuItem,
+  Skeleton,
+  SkeletonCircle
 } from '@chakra-ui/react';
 import { Link as TanstackLink, useNavigate } from '@tanstack/react-router';
 import { FiSearch, FiLogOut } from 'react-icons/fi';
 import { RxHamburgerMenu } from "react-icons/rx";
 import Logo from '../../components/logo';
 import { postLogout } from './layout.api';
+import { useGetMeQuery } from '../me/me.query';
 
 type TopBarProps = {
   isCollapsed: boolean;
@@ -26,15 +29,9 @@ type TopBarProps = {
   isLogin: boolean;
 };
 
-const TopBar = (props: TopBarProps) => {
-  const {
-    isCollapsed,
-    onToggle,
-    isLogin
-  } = props;
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+const MeMenu = () => {
   const navigate = useNavigate();
+  const { isLoading, data } = useGetMeQuery();
 
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
@@ -51,6 +48,45 @@ const TopBar = (props: TopBarProps) => {
       }
     }
   };
+
+  return (
+    <Menu>
+      <MenuButton>
+        <HStack>
+          {isLoading ? (
+            <>
+              <Skeleton height="20px" width="80px" />
+              <SkeletonCircle size="32px" />
+            </>
+          ) : (
+            <>
+              <Text>{data?.username}</Text>
+              <Avatar
+                name={data?.username}
+                src="/placeholder-avatar.jpg"
+                size="sm"
+              />
+            </>
+          )}
+        </HStack>
+      </MenuButton>
+      <MenuList>
+        <MenuItem icon={<FiLogOut />} onClick={handleLogout}>
+          登出
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  )
+};
+
+const TopBar = (props: TopBarProps) => {
+  const {
+    isCollapsed,
+    onToggle,
+    isLogin
+  } = props;
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <Flex
@@ -106,36 +142,20 @@ const TopBar = (props: TopBarProps) => {
       </InputGroup>
       <HStack spacing={4}>
         {isLogin ? (
-          <>
-            <Menu>
-              <MenuButton>
-                <HStack>
-                  <Text>John Doe</Text>
-                  <Avatar name="John Doe" src="https://bit.ly/broken-link" />
-                </HStack>
-              </MenuButton>
-              <MenuList>
-                <MenuItem icon={<FiLogOut />} onClick={handleLogout}>
-                  登出
-                </MenuItem>
-              </MenuList>
-            </Menu>
-          </>
+          <MeMenu />
         ) : (
-          <>
-            <Link
-              bgColor="purple.500"
-              color="white"
-              px={4}
-              py={2}
-              borderRadius="base"
-              _hover={{ textDecoration: 'none' }}
-              as={TanstackLink}
-              to="/login"
-            >
-              登入
-            </Link>
-          </>
+          <Link
+            bgColor="purple.500"
+            color="white"
+            px={4}
+            py={2}
+            borderRadius="base"
+            _hover={{ textDecoration: 'none' }}
+            as={TanstackLink}
+            to="/login"
+          >
+            登入
+          </Link>
         )}
       </HStack>
     </Flex>
