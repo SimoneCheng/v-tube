@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   VStack,
   HStack,
@@ -12,9 +13,12 @@ import {
   Container,
   Skeleton,
   SkeletonCircle,
+  SimpleGrid,
+  Box,
 } from '@chakra-ui/react';
 import { HiOutlineFilm } from 'react-icons/hi';
-import { useGetMeQuery } from './me.query';
+import { useGetMeQuery, useGetUserVideosQuery } from './me.query';
+import { type Video } from './me.api';
 
 const ProfileSkeleton = () => {
   return (
@@ -70,13 +74,88 @@ const ProfileContent = (props: {
   );
 };
 
+export const VideoList = ({ videos }: { videos: Video[]; }) => {
+  return (
+    <SimpleGrid columns={[1, 2, 3]} spacing={6}>
+      {videos.map((video) => (
+        <VideoCard key={video.id} video={video} />
+      ))}
+    </SimpleGrid>
+  );
+};
+
+const VideoCard = ({ video }: { video: Video }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <Box
+      borderRadius="lg"
+      overflow="hidden"
+      borderWidth="1px"
+      _hover={{ shadow: 'md' }}
+      transition="all 0.2s"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Box position="relative" w="100%" paddingTop="56.25%">
+        {isLoading && (
+          <Skeleton
+            position="absolute"
+            top={0}
+            left={0}
+            width="100%"
+            height="100%"
+          />
+        )}
+        {hasError && <Text>Failed to load video</Text>}
+        <video
+          src={video.url}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+          preload="metadata"
+          onLoadedData={() => setIsLoading(false)}
+          muted
+          autoPlay={isHovered}
+          loop={isHovered}
+          playsInline
+          onError={() => {
+          setIsLoading(false);
+          setHasError(true);
+          console.error('Video load error:', video.url);
+        }}
+        />
+      </Box>
+      <VStack align="stretch" p={3} spacing={2}>
+        <Text fontWeight="bold" noOfLines={2}>
+          {video.title}
+        </Text>
+        <Text fontSize="sm" color="gray.600" noOfLines={1}>
+          {video.uploader.username}
+        </Text>
+        <Text fontSize="sm" color="gray.500">
+          {video.views.toLocaleString()} views • {new Date(video.uploadedAt).toLocaleDateString()}
+        </Text>
+      </VStack>
+    </Box>
+  );
+};
+
 const MePage = () => {
-  const { data, isLoading } = useGetMeQuery();
+  const { data: userData, isLoading: isUserLoading } = useGetMeQuery();
+  const { data: videos, isLoading: isVideosLoading } = useGetUserVideosQuery(userData?.id || 0);
 
   return (
     <Container maxW="container.lg" py={8}>
       <VStack spacing={6} align="stretch">
-        {isLoading ? <ProfileSkeleton /> : <ProfileContent {...data} />}
+        {isUserLoading ? <ProfileSkeleton /> : <ProfileContent {...userData} />}
         <Tabs colorScheme="gray" mt={6}>
           <TabList borderBottomWidth="1px">
             <Tab>My Videos</Tab>
@@ -84,7 +163,13 @@ const MePage = () => {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Text>Your videos will appear here.</Text>
+              {isVideosLoading ? (
+                <Text>Loading videos...</Text>
+              ) : videos?.length ? (
+                <VideoList videos={videos} />
+              ) : (
+                <Text>No videos found.</Text>
+              )}
             </TabPanel>
             <TabPanel>
               <VStack spacing={4} align="center" py={10}>
