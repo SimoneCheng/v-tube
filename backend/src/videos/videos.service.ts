@@ -28,18 +28,81 @@ export class VideosService {
   }
 
   async findAll(): Promise<Video[]> {
-    return this.videoRepository.find({ relations: ['uploader'] });
+    const videos = await this.videoRepository.find({
+      relations: {
+        uploader: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        url: true,
+        views: true,
+        uploadedAt: true,
+        uploaderId: true,
+        uploader: {
+          id: true,
+          username: true,
+        },
+      },
+    });
+    return videos;
   }
 
   async findOne(id: number): Promise<Video | null> {
     const video = await this.videoRepository.findOne({
       where: { id },
-      relations: ['uploader'],
+      relations: {
+        uploader: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        url: true,
+        views: true,
+        uploadedAt: true,
+        uploaderId: true,
+        uploader: {
+          id: true,
+          username: true,
+        },
+      },
     });
+
     if (!video) {
       throw new NotFoundException(`Video with ID ${id} not found`);
     }
+
     return video;
+  }
+
+  async findByUserId(userId: number): Promise<Video[]> {
+    const videos = await this.videoRepository.find({
+      where: { uploaderId: userId },
+      relations: {
+        uploader: true,
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        url: true,
+        views: true,
+        uploadedAt: true,
+        uploaderId: true,
+        uploader: {
+          id: true,
+          username: true,
+        },
+      },
+    });
+
+    if (!videos.length) {
+      throw new NotFoundException(`No videos found for user ID ${userId}`);
+    }
+
+    return videos;
   }
 
   async incrementViews(id: number): Promise<void> {

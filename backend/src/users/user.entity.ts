@@ -4,10 +4,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
-import { Video } from '../videos/video.entity';
 
 @Entity('users')
 export class User {
@@ -51,8 +49,4 @@ export class User {
   @ApiHideProperty()
   @Column({ nullable: true })
   resetPasswordExpires: Date;
-
-  @ApiHideProperty()
-  @OneToMany(() => Video, (video) => video.uploaderId)
-  videos: Video[];
 }

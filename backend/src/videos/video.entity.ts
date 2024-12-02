@@ -3,8 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/user.entity';
 
 @Entity('videos')
 export class Video {
@@ -56,4 +59,12 @@ export class Video {
   })
   @CreateDateColumn({ name: 'uploadedAt' })
   uploadedAt: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'uploaderId' })
+  @ApiProperty({
+    example: { id: 1, username: 'john_doe' },
+    description: 'The user who uploaded the video',
+  })
+  uploader: User;
 }

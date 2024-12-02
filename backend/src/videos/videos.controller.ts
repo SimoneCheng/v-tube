@@ -97,6 +97,18 @@ export class VideosController {
     return this.videosService.findOne(+id);
   }
 
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get all videos by user ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all videos from a specific user.',
+    type: [Video],
+  })
+  @ApiResponse({ status: 404, description: 'No videos found for this user.' })
+  async findByUserId(@Param('userId') userId: string): Promise<Video[]> {
+    return this.videosService.findByUserId(+userId);
+  }
+
   @Post(':id/view')
   @ApiOperation({ summary: 'Increment video views' })
   @ApiResponse({

@@ -41,8 +41,15 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Return all users.', type: [User] })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const result = await this.usersService.findAll();
+    return result.map((item) => ({
+      id: item.id,
+      username: item.username,
+      email: item.email,
+      createAt: item.createdAt,
+      updateAt: item.updatedAt,
+    }));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,8 +58,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({ status: 200, description: 'Return the user.', type: User })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const result = await this.usersService.findOne(+id);
+    delete result.password;
+    delete result.resetPasswordToken;
+    delete result.resetPasswordExpires;
+    return result;
   }
 
   @UseGuards(JwtAuthGuard)
