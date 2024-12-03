@@ -15,10 +15,15 @@ import {
   SkeletonCircle,
   SimpleGrid,
   Box,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { HiOutlineFilm } from 'react-icons/hi';
-import { useGetMeQuery, useGetUserVideosQuery } from './me.query';
+import {
+  useGetMeQuery,
+  useGetUserVideosQuery,
+} from './me.query';
 import { type Video } from './me.api';
+import UploadDialog from './upload-dialog';
 
 const ProfileSkeleton = () => {
   return (
@@ -127,10 +132,10 @@ const VideoCard = ({ video }: { video: Video }) => {
           loop={isHovered}
           playsInline
           onError={() => {
-          setIsLoading(false);
-          setHasError(true);
-          console.error('Video load error:', video.url);
-        }}
+            setIsLoading(false);
+            setHasError(true);
+            console.error('Video load error:', video.url);
+          }}
         />
       </Box>
       <VStack align="stretch" p={3} spacing={2}>
@@ -149,6 +154,7 @@ const VideoCard = ({ video }: { video: Video }) => {
 };
 
 const MePage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: userData, isLoading: isUserLoading } = useGetMeQuery();
   const { data: videos, isLoading: isVideosLoading } = useGetUserVideosQuery(userData?.id || 0);
 
@@ -180,7 +186,7 @@ const MePage = () => {
                 <Text color="gray.600" textAlign="center">
                   Everything you make public will appear here.
                 </Text>
-                <Button colorScheme="purple" size="lg" mt={4}>
+                <Button colorScheme="purple" size="lg" mt={4} onClick={onOpen}>
                   Upload
                 </Button>
               </VStack>
@@ -188,6 +194,7 @@ const MePage = () => {
           </TabPanels>
         </Tabs>
       </VStack>
+      {userData?.id && <UploadDialog isOpen={isOpen} onClose={onClose} userId={userData.id} />}
     </Container>
   );
 };
