@@ -13,7 +13,11 @@ type Video = {
   };
 };
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export const getSingleVideo = async ({ id }: { id: string | number; }) => {
-  const response = await ky.get(`/api/videos/${id}`).json<Video>();
+  const response = await ky.get(`videos/${id}`, {
+    prefixUrl: apiUrl,
+  }).json<Video>();
   return response;
 };
