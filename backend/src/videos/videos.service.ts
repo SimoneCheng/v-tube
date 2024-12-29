@@ -29,7 +29,7 @@ export class VideosService {
     user: any,
   ): Promise<Video> {
     // 生成 S3 的檔案路徑
-    const originalName = encodeURIComponent(file.originalname);
+    const originalName = file.originalname;
     const timestamp = new Date().getTime();
     const key = `videos/${timestamp}-${originalName}`;
 
@@ -42,7 +42,7 @@ export class VideosService {
         ContentType: 'video/mp4',
         ContentDisposition: `inline; filename="${originalName}"`,
         Metadata: {
-          originalname: encodeURIComponent(originalName),
+          originalname: originalName,
         },
       });
       await this.s3Client.send(command);
