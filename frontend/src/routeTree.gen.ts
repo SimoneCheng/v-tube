@@ -18,6 +18,7 @@ import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout.index'
 import { Route as ResetPasswordTokenImport } from './routes/reset-password.$token'
 import { Route as LayoutMeImport } from './routes/_layout.me'
+import { Route as LayoutVideoVideoIdImport } from './routes/_layout.video.$videoId'
 
 // Create/Update Routes
 
@@ -53,6 +54,11 @@ const ResetPasswordTokenRoute = ResetPasswordTokenImport.update({
 
 const LayoutMeRoute = LayoutMeImport.update({
   path: '/me',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutVideoVideoIdRoute = LayoutVideoVideoIdImport.update({
+  path: '/video/$videoId',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -109,13 +115,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/video/$videoId': {
+      id: '/_layout/video/$videoId'
+      path: '/video/$videoId'
+      fullPath: '/video/$videoId'
+      preLoaderRoute: typeof LayoutVideoVideoIdImport
+      parentRoute: typeof LayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren({
-  LayoutRoute: LayoutRoute.addChildren({ LayoutMeRoute, LayoutIndexRoute }),
+  LayoutRoute: LayoutRoute.addChildren({
+    LayoutMeRoute,
+    LayoutIndexRoute,
+    LayoutVideoVideoIdRoute,
+  }),
   ForgetPasswordRoute,
   LoginRoute,
   RegisterRoute,
@@ -141,7 +158,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "_layout.tsx",
       "children": [
         "/_layout/me",
-        "/_layout/"
+        "/_layout/",
+        "/_layout/video/$videoId"
       ]
     },
     "/forget-password": {
@@ -162,6 +180,10 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_layout/": {
       "filePath": "_layout.index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/video/$videoId": {
+      "filePath": "_layout.video.$videoId.tsx",
       "parent": "/_layout"
     }
   }

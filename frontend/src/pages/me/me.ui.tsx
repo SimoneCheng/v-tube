@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import {
   VStack,
   HStack,
@@ -90,9 +91,17 @@ export const VideoList = ({ videos }: { videos: Video[]; }) => {
 };
 
 const VideoCard = ({ video }: { video: Video }) => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const handleClick = () => {
+    navigate({
+      to: '/video/$videoId',
+      params: { videoId: video.id.toString() }
+    });
+  };
 
   return (
     <Box
@@ -103,6 +112,7 @@ const VideoCard = ({ video }: { video: Video }) => {
       transition="all 0.2s"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
     >
       <Box position="relative" w="100%" paddingTop="56.25%">
         {isLoading && (
