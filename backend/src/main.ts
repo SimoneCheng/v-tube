@@ -31,6 +31,16 @@ async function bootstrap() {
 
     await app.get(ConfigService);
     await app.useGlobalFilters(new HttpExceptionFilter());
+
+    app.enableCors({
+      origin: [
+        'http://vtube-frontend.s3-website-ap-southeast-2.amazonaws.com',
+        'http://localhost:5173',
+      ],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    });
+
     await app.listen(3000);
     logger.log('Application is listening on port 3000');
   } catch (error) {
