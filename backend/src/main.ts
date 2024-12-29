@@ -18,15 +18,16 @@ async function bootstrap() {
       prefix: '/uploads/',
     });
 
-    const config = new DocumentBuilder()
-      .setTitle('V-Tube API')
-      .setDescription('The V-Tube API description')
-      .setVersion('1.0')
-      .addTag('v-tube')
-      .addBearerAuth()
-      .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document);
+    if (process.env.NODE_ENV !== 'production') {
+      const config = new DocumentBuilder()
+        .setTitle('VTube API')
+        .setDescription('The VTube API description')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .build();
+      const document = SwaggerModule.createDocument(app, config);
+      SwaggerModule.setup('api', app, document);
+    }
 
     await app.get(ConfigService);
     await app.useGlobalFilters(new HttpExceptionFilter());
