@@ -1,7 +1,6 @@
 import { Injectable, ConflictException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { TokenBlacklistService } from './token-blacklist.service';
 import * as bcrypt from 'bcrypt';
 import { Register } from './register.entity';
 
@@ -12,7 +11,6 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private tokenBlacklistService: TokenBlacklistService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -27,7 +25,9 @@ export class AuthService {
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload, {
+        expiresIn: '1h',
+      }),
     };
   }
 
@@ -45,21 +45,7 @@ export class AuthService {
     return result;
   }
 
-  async logout(token: string) {
-    try {
-      const decodedToken = this.jwtService.decode(token) as { exp: number };
-      const currentTimestamp = Math.floor(Date.now() / 1000);
-      const expirationTime = decodedToken.exp - currentTimestamp;
-
-      if (expirationTime > 0) {
-        await this.tokenBlacklistService.addToBlacklist(token, expirationTime);
-        this.logger.log(`Token blacklisted successfully: ${token}`);
-      } else {
-        this.logger.warn(`Token already expired, not blacklisting: ${token}`);
-      }
-    } catch (error) {
-      this.logger.error(`Error during logout: ${error.message}`, error.stack);
-      throw error;
-    }
+  async logout() {
+    return { message: 'Logged out successfully' };
   }
 }
