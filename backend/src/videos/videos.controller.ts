@@ -8,6 +8,7 @@ import {
   UploadedFile,
   Body,
   Request,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -21,8 +22,6 @@ import {
   ApiConsumes,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 @ApiTags('videos')
 @Controller('videos')
@@ -57,16 +56,18 @@ export class VideosController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads/videos',
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          return cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      limits: {
+        fileSize: 1024 * 1024 * 100, // 100MB 限制
+      },
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.includes('video/')) {
+          return cb(
+            new BadRequestException('Only video files are allowed'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
     }),
   )
   async uploadVideo(
@@ -75,6 +76,9 @@ export class VideosController {
     @Body('description') description: string,
     @Request() req,
   ): Promise<Video> {
+    if (!file) {
+      throw new BadRequestException('Video file is required');
+    }
     return this.videosService.uploadVideo(file, title, description, req.user);
   }
 

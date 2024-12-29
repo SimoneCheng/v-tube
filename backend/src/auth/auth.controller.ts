@@ -106,7 +106,7 @@ export class AuthController {
     if (!token) {
       throw new UnauthorizedException('Invalid token format');
     }
-    await this.authService.logout(token);
+    await this.authService.logout();
     return { message: 'Logged out successfully' };
   }
 

@@ -1,10 +1,6 @@
 import { Module, Logger } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  CacheModule,
-  type CacheModuleAsyncOptions,
-} from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-store';
+import { TypeOrmModule, InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
@@ -13,29 +9,11 @@ import { SharedModule } from './shared/shared.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-const RedisConfig: CacheModuleAsyncOptions = {
-  isGlobal: true,
-  imports: [ConfigModule],
-  useFactory: async (configService: ConfigService) => {
-    const store = await redisStore({
-      socket: {
-        host: configService.get<string>('REDIS_HOST'),
-        port: parseInt(configService.get<string>('REDIS_PORT')!),
-      },
-    });
-    return {
-      store: () => store,
-    };
-  },
-  inject: [ConfigService],
-};
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CacheModule.registerAsync(RedisConfig),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -47,6 +25,12 @@ const RedisConfig: CacheModuleAsyncOptions = {
         database: configService.get('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: configService.get('DB_SYNCHRONIZE'),
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }),
       inject: [ConfigService],
     }),
@@ -59,8 +43,18 @@ const RedisConfig: CacheModuleAsyncOptions = {
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectDataSource() private dataSource: DataSource,
+  ) {
     const logger = new Logger('AppModule');
     logger.log('AppModule initialized');
+    const databaseLogger = new Logger('Database');
+    if (this.dataSource.isInitialized) {
+      databaseLogger.log('Database connection successful');
+      databaseLogger.log(`Connected to: ${configService.get('DB_HOST')}`);
+    } else {
+      databaseLogger.error('Database connection failed');
+    }
   }
 }

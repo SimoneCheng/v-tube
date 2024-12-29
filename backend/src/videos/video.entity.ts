@@ -60,6 +60,9 @@ export class Video {
   @CreateDateColumn({ name: 'uploadedAt' })
   uploadedAt: Date;
 
+  @Column({ nullable: true })
+  s3Key: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'uploaderId' })
   @ApiProperty({
