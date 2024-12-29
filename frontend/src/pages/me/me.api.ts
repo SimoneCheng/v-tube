@@ -32,15 +32,19 @@ export type UploadVideoRequest = {
   token: string;
 };
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export const getMe = async ({ token }: MeCredentials) => {
-  const response = await ky.get('/api/auth/me', {
+  const response = await ky.get('auth/me', {
+    prefixUrl: apiUrl,
     headers: { 'Authorization': `Bearer ${token}` },
   }).json<MeResponse>();
   return response;
 };
 
 export const getUserVideos = async ({ userId, token }: { userId: number; token: string; }) => {
-  const response = await ky.get(`/api/videos/user/${userId}`, {
+  const response = await ky.get(`videos/user/${userId}`, {
+    prefixUrl: apiUrl,
     headers: { 'Authorization': `Bearer ${token}` },
   }).json<Video[]>();
   return response;
@@ -52,7 +56,8 @@ export const uploadVideo = async ({ file, title, description, token }: UploadVid
   formData.append('title', title);
   formData.append('description', description);
 
-  const response = await ky.post('/api/videos/upload', {
+  const response = await ky.post('videos/upload', {
+    prefixUrl: apiUrl,
     headers: { 'Authorization': `Bearer ${token}` },
     body: formData,
   }).json<Video>();
