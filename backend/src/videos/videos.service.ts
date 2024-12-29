@@ -48,7 +48,7 @@ export class VideosService {
       await this.s3Client.send(command);
 
       // 建立 S3 的公開 URL
-      const videoUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+      const videoUrl = `https://${process.env.CLOUDFRONT_DOMAIN}/${key}`;
 
       // 儲存到資料庫
       const video = new Video();
