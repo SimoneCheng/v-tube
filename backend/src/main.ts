@@ -34,6 +34,7 @@ async function bootstrap() {
 
     app.enableCors({
       origin: [
+        'https://da4coqpge758r.cloudfront.net/',
         'http://vtube-frontend.s3-website-ap-southeast-2.amazonaws.com',
         'http://localhost:5173',
       ],
